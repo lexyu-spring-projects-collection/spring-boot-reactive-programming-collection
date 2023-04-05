@@ -52,4 +52,32 @@ class BookServiceMockTest {
                 .expectError(BookException.class)
                 .verify();
     }
+
+    @Test
+    void getBooksMockOnErrorRetry() {
+        Mockito.when(bookInfoService.getBooks())
+                .thenCallRealMethod();
+        Mockito.when(reviewService.getReviews(Mockito.anyLong()))
+                .thenThrow(new IllegalStateException("Exception using test"));
+
+        var books = bookService.getBooksRetry();
+        StepVerifier
+                .create(books)
+                .expectError(BookException.class)
+                .verify();
+    }
+
+    @Test
+    void getBooksMockOnErrorRetryWhen() {
+        Mockito.when(bookInfoService.getBooks())
+                .thenCallRealMethod();
+        Mockito.when(reviewService.getReviews(Mockito.anyLong()))
+                .thenThrow(new IllegalStateException("Exception using test"));
+
+        var books = bookService.getBooksRetryWhen();
+        StepVerifier
+                .create(books)
+                .expectError(BookException.class)
+                .verify();
+    }
 }

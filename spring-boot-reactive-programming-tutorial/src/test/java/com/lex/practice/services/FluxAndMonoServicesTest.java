@@ -1,7 +1,9 @@
 package com.lex.practice.services;
 
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Hooks;
 import reactor.test.StepVerifier;
+import reactor.tools.agent.ReactorDebugAgent;
 
 /**
  * @author : LEX_YU
@@ -266,6 +268,9 @@ class FluxAndMonoServicesTest {
 
     @Test
     void fruitsFluxOnErrorMap() {
+//        Hooks.onOperatorDebug();
+        ReactorDebugAgent.init();
+        ReactorDebugAgent.processExistingClasses();
         var fruitsFluxOnErrorMap = services.fruitsFluxOnErrorMap();
         StepVerifier
                 .create(fruitsFluxOnErrorMap)
