@@ -1,0 +1,8 @@
+logging:
+  level:
+    org.springframework.data.r2dbc: debug
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5433/testdb
+    username: postgres
+    password: p@ssw0rd
