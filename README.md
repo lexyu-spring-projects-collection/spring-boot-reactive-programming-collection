@@ -5,3 +5,4 @@
   - https://www.appsdeveloperblog.com/hot-and-cold-publishers-in-project-reactor/
 - [spring-webflux-demo](spring-webflux-demo)
   - https://www.youtube.com/watch?v=PecY7og5KyI
+  - https://youtu.be/II52GMXir4E?si=pELvORaznlEsNtBq
