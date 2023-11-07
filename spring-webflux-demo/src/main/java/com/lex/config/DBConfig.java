@@ -6,9 +6,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.r2dbc.connection.init.CompositeDatabasePopulator;
 import org.springframework.r2dbc.connection.init.ConnectionFactoryInitializer;
 import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
 
 /**
  * @author : Lex Yu
@@ -29,6 +32,5 @@ public class DBConfig extends AbstractR2dbcConfiguration {
 		databasePopulator.addPopulators(new ResourceDatabasePopulator(new ClassPathResource("data.sql")));
 		return initializer;
 	}
-
 
 }

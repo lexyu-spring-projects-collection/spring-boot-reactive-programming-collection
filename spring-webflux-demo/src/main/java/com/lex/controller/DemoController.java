@@ -11,9 +11,10 @@ import java.time.Duration;
  * @author : Lex Yu
  */
 @RestController
+@RequestMapping("/demo")
 public class DemoController {
 
-    @GetMapping("/demo")
+    @GetMapping
     public Mono<String> greetingMessage() {
 //        return computeMessage();
 
