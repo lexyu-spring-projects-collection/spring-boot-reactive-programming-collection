@@ -3,11 +3,10 @@ package com.lex.controller;
 import com.lex.model.Product;
 import com.lex.service.ProductService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /**
  * @author : Lex Yu
@@ -16,15 +15,49 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/product")
 public class ProductController {
 
-    private final ProductService productService;
+	private final ProductService productService;
 
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
+	public ProductController(ProductService productService) {
+		this.productService = productService;
+	}
 
+	@GetMapping("/{id}")
+	public Mono<ResponseEntity> getProduct(@PathVariable(value = "id") Integer id) {
+		return productService.getProduct(id);
+	}
 
-    @PostMapping
-    public Mono<ResponseEntity> saveProduct(@RequestBody Product product){
-        return productService.insertProduct(product);
-    }
+	@GetMapping("/list")
+	public Mono<ResponseEntity> getProducts() {
+		return productService.getProducts();
+	}
+
+	@PostMapping
+	public Mono<ResponseEntity> saveProduct(@RequestBody Product product) {
+		return productService.insertProduct(product);
+	}
+
+	@PostMapping("/batch")
+	public Mono<ResponseEntity> saveProducts(@RequestBody List<Product> products) {
+		return productService.insertBatchOfProducts(products);
+	}
+
+	@PutMapping
+	public Mono<ResponseEntity> updateProduct() {
+		return productService.updateProduct();
+	}
+
+	@PutMapping("/batch")
+	public Mono<ResponseEntity> updateProducts() {
+		return productService.updateBatchOfProducts();
+	}
+
+	@DeleteMapping
+	public Mono<ResponseEntity> deleteProduct() {
+		return productService.deleteProduct();
+	}
+
+	@DeleteMapping("/batch")
+	public Mono<ResponseEntity> deleteProducts() {
+		return productService.deleteBatchOfProducts();
+	}
 }
