@@ -3,6 +3,6 @@ logging:
     org.springframework.data.r2dbc: debug
 spring:
   r2dbc:
-    url: r2dbc:postgresql://localhost:5433/testdb
+    url: r2dbc:postgresql://localhost/test_db
     username: postgres
-    password: p@ssw0rd
+    password: "P@ssw0rd123"
