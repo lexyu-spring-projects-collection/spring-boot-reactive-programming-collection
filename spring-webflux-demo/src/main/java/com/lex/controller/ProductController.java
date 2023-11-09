@@ -33,7 +33,8 @@ public class ProductController {
 
 	@PostMapping
 	public Mono<ResponseEntity> saveProduct(@RequestBody Product product) {
-		return productService.insertProduct(product);
+//		return productService.insertProduct(product);
+		return productService.saveProduct(product);
 	}
 
 	@PostMapping("/batch")
@@ -41,9 +42,10 @@ public class ProductController {
 		return productService.insertBatchOfProducts(products);
 	}
 
-	@PutMapping
-	public Mono<ResponseEntity> updateProduct() {
-		return productService.updateProduct();
+	@PutMapping("/{id}")
+	public Mono<ResponseEntity<Product>> updateProduct(@PathVariable(value = "id") Integer id,
+											  @RequestBody Product product) {
+		return productService.updateProduct(id, product);
 	}
 
 	@PutMapping("/batch")
