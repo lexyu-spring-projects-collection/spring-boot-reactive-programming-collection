@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 
@@ -34,14 +35,14 @@ public class ProductService {
                 .defaultIfEmpty(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(HttpStatus.BAD_REQUEST.getReasonPhrase()));
     }
 
-    public Mono<ResponseEntity> saveProduct(Product product) {
+    public Mono<ResponseEntity> find_product_or_save_product(Product product) {
         return productRepo.findById(product.getId())
                 .log()
-                .switchIfEmpty(Mono.error(new RuntimeException("Not Found")))
-//                .map(p -> {
-//                    productRepo.save(p);
-//                    return ResponseEntity.status(HttpStatus.OK).body(p);
-//                })
+                .publishOn(Schedulers.boundedElastic())
+                .map(p -> {
+                    productRepo.save(p).subscribe();
+                    return ResponseEntity.status(HttpStatus.OK).body(p);
+                })
                 .doOnError(err -> log.error("{}", err.getMessage()))
                 .cast(ResponseEntity.class)
                 .defaultIfEmpty(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(HttpStatus.BAD_REQUEST.getReasonPhrase()));
@@ -77,28 +78,60 @@ public class ProductService {
                 .defaultIfEmpty(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
 
-    public Mono<ResponseEntity<Product>> updateProduct(Integer id, Product product) {
-        return productRepo.updateProductById(id, product)
+    public Mono<ResponseEntity> updateProduct(Integer id, Product product) {
+        return productRepo.findById(id)
                 .log()
                 .doOnNext(updateProduct -> log.info("Product Updated: {}", updateProduct))
                 .map(p -> {
                     log.info("Product = {}", p);
-                    return ResponseEntity.status(HttpStatus.OK).body(p);
+                    p.setName(product.getName());
+                    p.setPrice(product.getPrice());
+                    return ResponseEntity.status(HttpStatus.OK).body(productRepo.save(p));
                 })
-//                .cast(ResponseEntity.class)
-//                .defaultIfEmpty(ResponseEntity.status(HttpStatus.BAD_REQUEST).build())
-                .doOnError(err -> log.error("ERR = {}", err.getMessage()));
+                .doOnError(err -> log.error("ERR = {}", err.getMessage()))
+                .cast(ResponseEntity.class)
+                .defaultIfEmpty(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+    }
+
+    public Mono<ResponseEntity> updateProductByQuery(Integer id, Product product) {
+        return productRepo.updateProductById(id, product.getName(), product.getPrice())
+                .log()
+                .doOnNext(data -> log.info("Product Updated: {}", data))
+                .doOnError(err -> log.error("ERR = {}", err.getMessage()))
+                .map(data -> {
+                    log.info("Product = {}", data);
+                    if (data.equals("1")) {
+                        return ResponseEntity.status(HttpStatus.OK).body(data);
+                    } else {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HttpStatus.NOT_FOUND.getReasonPhrase());
+                    }
+                });
     }
 
     public Mono<ResponseEntity> updateBatchOfProducts() {
         return null;
     }
 
-    public Mono<ResponseEntity> deleteProduct() {
-        return null;
+    public Mono<ResponseEntity> deleteProduct(Integer id) {
+        return productRepo.deleteById(id)
+                .log()
+                .map(data -> {
+                    log.info("{}", data);
+                    return ResponseEntity.status(HttpStatus.OK).build();
+                })
+                .cast(ResponseEntity.class)
+                .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found"));
     }
 
-    public Mono<ResponseEntity> deleteBatchOfProducts() {
-        return null;
+    public Mono<ResponseEntity> deleteBatchOfProducts(List<Integer> idList) {
+        return productRepo.deleteAllById(idList)
+                .log()
+                .map(data -> {
+                    log.info("{}", data);
+                    return ResponseEntity.status(HttpStatus.OK).build();
+                })
+                .doOnError(err -> log.error("ERR = {}", err.getMessage()))
+                .cast(ResponseEntity.class)
+                .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found"));
     }
 }

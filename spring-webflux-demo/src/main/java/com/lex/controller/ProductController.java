@@ -33,8 +33,7 @@ public class ProductController {
 
 	@PostMapping
 	public Mono<ResponseEntity> saveProduct(@RequestBody Product product) {
-//		return productService.insertProduct(product);
-		return productService.saveProduct(product);
+		return productService.insertProduct(product);
 	}
 
 	@PostMapping("/batch")
@@ -43,9 +42,14 @@ public class ProductController {
 	}
 
 	@PutMapping("/{id}")
-	public Mono<ResponseEntity<Product>> updateProduct(@PathVariable(value = "id") Integer id,
+	public Mono<ResponseEntity> updateProduct(@PathVariable(value = "id") Integer id,
 											  @RequestBody Product product) {
 		return productService.updateProduct(id, product);
+	}
+	@PutMapping("/query/{id}")
+	public Mono<ResponseEntity> updateProduct2(@PathVariable(value = "id") Integer id,
+											  @RequestBody Product product) {
+		return productService.updateProductByQuery(id, product);
 	}
 
 	@PutMapping("/batch")
@@ -53,13 +57,13 @@ public class ProductController {
 		return productService.updateBatchOfProducts();
 	}
 
-	@DeleteMapping
-	public Mono<ResponseEntity> deleteProduct() {
-		return productService.deleteProduct();
+	@DeleteMapping("/{id}")
+	public Mono<ResponseEntity> deleteProduct(@PathVariable(value = "id") Integer id) {
+		return productService.deleteProduct(id);
 	}
 
 	@DeleteMapping("/batch")
-	public Mono<ResponseEntity> deleteProducts() {
-		return productService.deleteBatchOfProducts();
+	public Mono<ResponseEntity> deleteProducts(@RequestBody List<Integer> idList) {
+		return productService.deleteBatchOfProducts(idList);
 	}
 }
